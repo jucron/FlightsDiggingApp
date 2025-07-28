@@ -51,7 +51,14 @@ namespace FlightsDiggingApp
         {
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                var baseUrl = builder.Configuration["Swagger:BaseUrl"];
+                if (!string.IsNullOrEmpty(baseUrl))
+                {
+                    c.AddServer(new Microsoft.OpenApi.Models.OpenApiServer { Url = baseUrl });
+                }
+            });
         }
 
         internal static void ConfigureLogger(WebApplicationBuilder builder)

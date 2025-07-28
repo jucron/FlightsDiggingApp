@@ -28,10 +28,10 @@ jobs:
           echo "${{ secrets.API_PROPERTIES_JSON_BASE64 }}" | base64 -d > ./api_properties_values.json
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Debug
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Debug -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4

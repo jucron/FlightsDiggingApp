@@ -30,11 +30,8 @@ var app = builder.Build();
 app.UseDeveloperExceptionPage();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 #endif
 
 app.UseRouting();              // Enable routing for controllers

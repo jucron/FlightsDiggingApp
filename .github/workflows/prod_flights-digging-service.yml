@@ -23,6 +23,10 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Recreate api_properties_values.json from secret
+        run: |
+          echo "${{ secrets.API_PROPERTIES_JSON_BASE64 }}" | base64 -d > ./api_properties_values.json
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
 

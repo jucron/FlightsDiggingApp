@@ -68,8 +68,6 @@ namespace FlightsDiggingApp.Controllers
         {
             return _flightsDiggerService.GetAuthToken();
         }
-       
-    }
 #endif
-
+    }
 }

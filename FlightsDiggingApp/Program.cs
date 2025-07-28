@@ -1,10 +1,20 @@
-using FlightsDiggingApp.Properties;
 using FlightsDiggingApp;
+using FlightsDiggingApp.Properties;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+BuilderHelper.SetupPort(builder);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
+Console.WriteLine("Starting FlightsDiggingApp...");
+
 BuilderHelper.AddControllers(builder);
+
+BuilderHelper.AddEnvironmentProperties(builder);
 
 #if DEBUG
 BuilderHelper.AddSwagger(builder);
@@ -16,11 +26,7 @@ BuilderHelper.AddSingletonsDependencies(builder);
 
 BuilderHelper.ConfigureLogger(builder);
 
-// TEMP service provider to resolve EnvironmentProperties early
-var tempProvider = builder.Services.BuildServiceProvider();
-var envProps = tempProvider.GetRequiredService<IPropertiesProvider>().EnvironmentProperties;
-
-BuilderHelper.SetupCors(builder, envProps);
+BuilderHelper.SetupCors(builder);
 
 // Build App
 var app = builder.Build();

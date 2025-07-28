@@ -23,21 +23,17 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      - name: Recreate api_properties_values.json from secret
-        run: |
-          echo "${{ secrets.API_PROPERTIES_JSON_BASE64 }}" | base64 -d > ./api_properties_values.json
-
       - name: Build with dotnet
-        run: dotnet build --configuration Debug
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Debug -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o ./publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./publish
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,6 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
+          path: ./publish
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -65,5 +62,5 @@ jobs:
         with:
           app-name: 'flights-digging-service'
           slot-name: 'Production'
-          package: .
+          package: ./publish
           

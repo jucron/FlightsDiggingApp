@@ -4,14 +4,19 @@ using System.Text.Json.Serialization;
 using FlightsDiggingApp.Properties;
 using FlightsDiggingApp.Services;
 using FlightsDiggingApp.Services.Filters;
+using FlightsDiggingApp.Utils;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 
 namespace FlightsDiggingApp
 {
+    
     public class BuilderHelper
     {
-        public static string CORS_POLICY_ALLOW_ALL = "AllowAll";
-        public static string CORS_POLICY_ALLOW_FRONT = "AllowFront";
+        private static EnvironmentProperties? _environmentProperties;
+
+        public static readonly string CORS_POLICY_ALLOW_ALL = "AllowAll";
+        public static readonly string CORS_POLICY_ALLOW_FRONT = "AllowFront";
         internal static void AddControllers(WebApplicationBuilder builder)
         {
             // Add controllers to the container.
@@ -23,16 +28,19 @@ namespace FlightsDiggingApp
         }
         internal static void AddPropertiesDependencies(WebApplicationBuilder builder)
         {
+            var env = GetEnvironmentVariable(builder);
+            Base64BuilderHelper.CreateApiPropertiesFile(env);
+
             // Populating Properties
             builder.Configuration
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("api_properties_values.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables();
+                //.AddJsonFile("api_properties_values.json", optional: false, reloadOnChange: true);
+                .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "api_properties_values.json"), optional: false, reloadOnChange: true);
 
             builder.Services
                 .Configure<AmadeusApiProperties>(builder.Configuration.GetSection("AmadeusApiValues"))
-                .Configure<AffiliateProperties>(builder.Configuration.GetSection("AffiliateProperties"))
-                .Configure<EnvironmentProperties>(builder.Configuration.GetSection("EnvironmentProperties"));
+                .Configure<AffiliateProperties>(builder.Configuration.GetSection("AffiliateProperties"));
+                
         }
 
         internal static void AddSingletonsDependencies(WebApplicationBuilder builder)
@@ -77,7 +85,7 @@ namespace FlightsDiggingApp
             });
         }
 
-        internal static void SetupCors(WebApplicationBuilder builder, EnvironmentProperties envProp)
+        internal static void SetupCors(WebApplicationBuilder builder)
         {
             builder.Services.AddCors(options =>
             {
@@ -90,12 +98,45 @@ namespace FlightsDiggingApp
                 });
                 options.AddPolicy(CORS_POLICY_ALLOW_FRONT, policy =>
                 {
-                    policy.WithOrigins(envProp.front_url)
+                    Console.WriteLine($"DEBUG HERE! Front url: {GetEnvironmentVariable(builder).FRONT_URL}");
+                    policy.WithOrigins(GetEnvironmentVariable(builder).FRONT_URL ?? "test")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
                 });
             });
+        }
+
+        /// <summary>
+        /// TEMP service provider to populate EnvironmentProperties early. Use it only after running AddEnvironmentProperties().
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <returns></returns>
+        internal static EnvironmentProperties GetEnvironmentVariable(WebApplicationBuilder builder)
+        {
+            if (_environmentProperties == null)
+            {
+                var tempProvider = builder.Services.BuildServiceProvider();
+                _environmentProperties = tempProvider.GetRequiredService<IOptions<EnvironmentProperties>>().Value;
+                Console.WriteLine("EnvironmentProperties populated with frontUrl " +_environmentProperties.FRONT_URL);
+            }
+            return _environmentProperties;
+        }
+
+        internal static void SetupPort(WebApplicationBuilder builder)
+        {
+            var port = Environment.GetEnvironmentVariable("PORT"); //Defined by the Server
+            Console.WriteLine($"PORT found: {port}");
+            if (port != null)
+                //builder.WebHost.UseUrls($"https://*:{port}", $"http://*:{port}");
+                builder.WebHost.UseUrls($"http://*:{port}");
+        }
+
+        internal static void AddEnvironmentProperties(WebApplicationBuilder builder)
+        {
+            builder.Configuration.AddEnvironmentVariables();
+            builder.Services
+                .Configure<EnvironmentProperties>(builder.Configuration.GetSection("EnvironmentProperties"));
         }
     }
 }

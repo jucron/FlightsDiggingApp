@@ -1,16 +1,17 @@
 using FlightsDiggingApp;
+using FlightsDiggingApp.Controllers.Middlewares;
 using FlightsDiggingApp.Properties;
+using FlightsDiggingApp.Services.Auth;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-BuilderHelper.SetupPort(builder);
-
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
+BuilderHelper.ConfigureLogger(builder);
 
 Console.WriteLine("Starting FlightsDiggingApp...");
+
+BuilderHelper.SetupPort(builder);
 
 BuilderHelper.AddControllers(builder);
 
@@ -18,13 +19,12 @@ BuilderHelper.AddEnvironmentProperties(builder);
 
 #if DEBUG
 BuilderHelper.AddSwagger(builder);
+AuthHelper.ProvideApiKeyForTesting(builder);
 #endif
 
 BuilderHelper.AddPropertiesDependencies(builder);
 
 BuilderHelper.AddSingletonsDependencies(builder);
-
-BuilderHelper.ConfigureLogger(builder);
 
 BuilderHelper.SetupCors(builder);
 
@@ -47,6 +47,8 @@ app.UseCors(BuilderHelper.CORS_POLICY_ALLOW_ALL);
 #elif RELEASE
 app.UseCors(BuilderHelper.CORS_POLICY_ALLOW_FRONT);       
 #endif
+
+app.UseMiddleware<ApiKeyAuthorizationMiddleware>();
 
 app.UseWebSockets();           // Enable WebSocket support before routing
 

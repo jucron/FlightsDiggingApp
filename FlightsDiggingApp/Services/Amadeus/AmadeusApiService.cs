@@ -8,15 +8,15 @@ using FlightsDiggingApp.Models.Amadeus;
 using System.Net;
 using Microsoft.Extensions.Options;
 
-namespace FlightsDiggingApp.Services
+namespace FlightsDiggingApp.Services.Amadeus
 {
-    public class AmadeusApiService : IApiService
+    public class AmadeusApiService : IRoundTripApiService
     {
         private readonly ILogger<AmadeusApiService> _logger;
-        private readonly IAuthService _authService;
+        private readonly IAmadeusAuthService _authService;
         private readonly AmadeusApiProperties _amadeusApiProperties;
 
-        public AmadeusApiService(ILogger<AmadeusApiService> logger, IAuthService authService, IPropertiesProvider propertiesProvider)
+        public AmadeusApiService(ILogger<AmadeusApiService> logger, IAmadeusAuthService authService, IPropertiesProvider propertiesProvider)
         {
             _logger = logger;
             _authService = authService;

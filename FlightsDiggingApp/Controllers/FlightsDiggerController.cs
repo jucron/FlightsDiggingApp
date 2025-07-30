@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightsDiggingApp.Controllers
 {
-    //[EnableCors("AllowAll")]
     [ApiController]
     [Route("api/flightsdigger")]
     public class FlightsDiggerController : ControllerBase

@@ -12,7 +12,7 @@ using FlightsDiggingApp.Models.RapidApi;
 namespace FlightsDiggingApp.Services
 {
     
-    public class RapidApiService : IApiService
+    public class RapidApiService : IRoundTripApiService
     {
         private readonly string _rapidapi_key = "441f8260camsh5ee529fad4a52c9p1cadf2jsnd01e83b82152";
         private readonly ILogger<RapidApiService> _logger;

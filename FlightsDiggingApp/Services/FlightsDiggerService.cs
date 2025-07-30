@@ -7,6 +7,7 @@ using FlightsDiggingApp.Mappers;
 using FlightsDiggingApp.Models;
 using FlightsDiggingApp.Models.RapidApi;
 using FlightsDiggingApp.Properties;
+using FlightsDiggingApp.Services.Amadeus;
 using FlightsDiggingApp.Services.Filters;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,15 +17,15 @@ namespace FlightsDiggingApp.Services
     public class FlightsDiggerService : IFlightsDiggerService
     {
         private readonly ILogger<FlightsDiggerService> _logger;
-        private readonly IApiService _apiService;
+        private readonly IRoundTripApiService _apiService;
         private readonly IFilterService _filterService;
         private readonly ICacheService _cacheService;
-        private readonly IAuthService _authService;
+        private readonly IAmadeusAuthService _authService;
         private readonly IPropertiesProvider _propertiesProvider;
 
         public FlightsDiggerService(ILogger<FlightsDiggerService> logger, 
-            IApiService apiService, IFilterService filterService, ICacheService cacheService, 
-            IAuthService authService, IPropertiesProvider propertiesProvider)
+            IRoundTripApiService apiService, IFilterService filterService, ICacheService cacheService, 
+            IAmadeusAuthService authService, IPropertiesProvider propertiesProvider)
         {
             _logger = logger;
             _apiService = apiService;

@@ -3,6 +3,8 @@
 using System.Text.Json.Serialization;
 using FlightsDiggingApp.Properties;
 using FlightsDiggingApp.Services;
+using FlightsDiggingApp.Services.Amadeus;
+using FlightsDiggingApp.Services.Auth;
 using FlightsDiggingApp.Services.Filters;
 using FlightsDiggingApp.Utils;
 using Microsoft.Extensions.Logging.Console;
@@ -34,7 +36,6 @@ namespace FlightsDiggingApp
             // Populating Properties
             builder.Configuration
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                //.AddJsonFile("api_properties_values.json", optional: false, reloadOnChange: true);
                 .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "api_properties_values.json"), optional: false, reloadOnChange: true);
 
             builder.Services
@@ -49,10 +50,11 @@ namespace FlightsDiggingApp
             builder.Services.AddSingleton<IPropertiesProvider, PropertiesProvider>();
             builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<ICacheService, CacheService>();
-            builder.Services.AddSingleton<IAuthService, AmadeusAuthService>();
-            builder.Services.AddSingleton<IApiService, AmadeusApiService>();
+            builder.Services.AddSingleton<IAmadeusAuthService, AmadeusAuthService>();
+            builder.Services.AddSingleton<IRoundTripApiService, AmadeusApiService>();
             builder.Services.AddSingleton<IFlightsDiggerService, FlightsDiggerService>();
             builder.Services.AddSingleton<IFilterService, FilterService>();
+            builder.Services.AddSingleton<IAuthService, AuthService>();
         }
 
         internal static void AddSwagger(WebApplicationBuilder builder)
@@ -98,8 +100,7 @@ namespace FlightsDiggingApp
                 });
                 options.AddPolicy(CORS_POLICY_ALLOW_FRONT, policy =>
                 {
-                    Console.WriteLine($"DEBUG HERE! Front url: {GetEnvironmentVariable(builder).FRONT_URL}");
-                    policy.WithOrigins(GetEnvironmentVariable(builder).FRONT_URL ?? "test")
+                    policy.WithOrigins(GetEnvironmentVariable(builder).FRONT_URL ?? "missing_front_address")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();

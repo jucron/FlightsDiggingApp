@@ -1,5 +1,4 @@
-﻿
-using FlightsDiggingApp.Helpers;
+﻿using FlightsDiggingApp.Helpers;
 using FlightsDiggingApp.Mappers;
 using FlightsDiggingApp.Models;
 using FlightsDiggingApp.Models.Amadeus;
@@ -8,9 +7,9 @@ using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
 
-namespace FlightsDiggingApp.Services
+namespace FlightsDiggingApp.Services.Amadeus
 {
-    public class AmadeusAuthService : IAuthService
+    public class AmadeusAuthService : IAmadeusAuthService
     {
         private readonly ICacheService _cacheService;
         private readonly ILogger<AmadeusAuthService> _logger;

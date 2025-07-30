@@ -3,7 +3,7 @@
 namespace FlightsDiggingApp.Controllers
 {
     [Route("health")]
-    public class Health : Controller
+    public class HealthController : Controller
     {
         [HttpGet]
         public string HealthCheck()

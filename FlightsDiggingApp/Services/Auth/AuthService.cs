@@ -47,17 +47,26 @@ namespace FlightsDiggingApp.Services.Auth
         }
         public bool Authorize(string clientId, long timestamp, string token)
         {
-            var expectedClientId = _environmentProperties.CLIENT_ID;
-            var secretKey = _environmentProperties.API_SECRET;
+            try
+            {
+                var expectedClientId = _environmentProperties.CLIENT_ID;
+                var secretKey = _environmentProperties.API_SECRET;
 
-            if (clientId != expectedClientId)
+                if (clientId != expectedClientId)
+                    return false;
+
+                var time = DateTimeOffset.FromUnixTimeSeconds(timestamp);
+                if (Math.Abs((DateTimeOffset.UtcNow - time).TotalMinutes) > 5)
+                    return false;
+
+                return IsTokenValid(token);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
                 return false;
-
-            var time = DateTimeOffset.FromUnixTimeSeconds(timestamp);
-            if (Math.Abs((DateTimeOffset.UtcNow - time).TotalMinutes) > 5)
-                return false;
-
-            return IsTokenValid(token);
+            }
+            
         }
         private bool IsTokenValid(string token)
         {

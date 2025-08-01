@@ -24,9 +24,9 @@ namespace FlightsDiggingApp.Controllers
                 var response = _authService.Authenticate(request);
                 return Ok(response);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
-                return Unauthorized(ex.Message);
+                return Unauthorized();
             }
 
         }

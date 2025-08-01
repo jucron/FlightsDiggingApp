@@ -32,16 +32,16 @@ namespace FlightsDiggingApp.Controllers.Middlewares
                 string.IsNullOrEmpty(signature) ||
                 !long.TryParse(timestampHeader, out long timestamp))
             {
+                // Missing or invalid authentication headers.
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync("Missing or invalid authentication headers.");
                 return;
             }
 
             // Validate signature
             if (!authService.Authorize(clientId, timestamp, signature))
             {
+                // Invalid signature
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsync("Forbidden: Invalid signature.");
                 return;
             }
 

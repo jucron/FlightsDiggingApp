@@ -119,7 +119,6 @@ namespace FlightsDiggingApp
             {
                 var tempProvider = builder.Services.BuildServiceProvider();
                 _environmentProperties = tempProvider.GetRequiredService<IOptions<EnvironmentProperties>>().Value;
-                Console.WriteLine("EnvironmentProperties populated with frontUrl " +_environmentProperties.FRONT_URL);
             }
             return _environmentProperties;
         }
@@ -127,10 +126,12 @@ namespace FlightsDiggingApp
         internal static void SetupPort(WebApplicationBuilder builder)
         {
             var port = Environment.GetEnvironmentVariable("PORT"); //Defined by the Server
-            Console.WriteLine($"PORT found: {port}");
+            
             if (port != null)
-                //builder.WebHost.UseUrls($"https://*:{port}", $"http://*:{port}");
+            {
+                Console.WriteLine($"PORT found in Environment with value: {port}");
                 builder.WebHost.UseUrls($"http://*:{port}");
+            }
         }
 
         internal static void AddEnvironmentProperties(WebApplicationBuilder builder)
